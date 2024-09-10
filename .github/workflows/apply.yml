@@ -1,0 +1,49 @@
+# This is a basic workflow to help you get started with Actions
+
+name: 'Terraform Plan and Apply Workflow'
+
+on:
+  push:
+    branches:
+      - main
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: 'Checkout code'
+        uses: actions/checkout@v4
+        
+      - name: 'Set up Terraform'
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.0.0
+
+      - name: 'Login to Azure'
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+
+      - name: 'Terraform Init'
+        run: terraform init
+
+      - name: 'Terraform Plan'
+        id: plan
+        run: terraform plan -out=tfplan
+
+      - name: 'Upload Plan to Terraform Cloud'
+        uses: hashicorp/terraform-action@v2
+        with:
+          command: plan
+        env:
+          TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }} # Terraform Cloud API token
