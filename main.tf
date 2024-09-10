@@ -77,7 +77,7 @@ resource "azurerm_redhat_openshift_cluster" "aro_cluster" {
   }
 }
 
-# Output the ARO cluster details
+# Output the ARO cluster details changes 2 
 output "aro_cluster_name" {
   value = azurerm_redhat_openshift_cluster.aro_cluster.name
 }
