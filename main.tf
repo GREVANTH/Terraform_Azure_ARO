@@ -3,7 +3,7 @@ terraform {
     organization = "R-Demo" # Replace with your Terraform Cloud organization name
     
     workspaces {
-      name = "aro-cluster-workspace" # Replace with your workspace name
+      name = "my-azure-workspace" # Replace with your workspace name
     }
   }
 }
