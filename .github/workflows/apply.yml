@@ -42,7 +42,7 @@ jobs:
         run: terraform plan -out=tfplan
 
       - name: 'Upload Plan to Terraform Cloud'
-        uses: hashicorp/terraform-action@v3
+        uses: hashicorp/terraform-action@v2
         with:
           command: plan
         env:
