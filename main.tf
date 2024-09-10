@@ -1,6 +1,6 @@
 terraform {
   backend "remote" {
-    organization = "" # Replace with your Terraform Cloud organization name
+    organization = "R-Demo" # Replace with your Terraform Cloud organization name
     
     workspaces {
       name = "aro-cluster-workspace" # Replace with your workspace name
