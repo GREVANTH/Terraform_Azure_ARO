@@ -22,9 +22,9 @@ jobs:
         uses: actions/checkout@v4
         
       - name: 'Set up Terraform'
-        uses: hashicorp/setup-terraform@v1
+        uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.0.0
+          terraform_version: 1.5.0
 
       - name: 'Login to Azure'
         uses: azure/login@v1
@@ -40,10 +40,6 @@ jobs:
       - name: 'Terraform Plan'
         id: plan
         run: terraform plan -out=tfplan
-
-      - name: 'Upload Plan to Terraform Cloud'
-        uses: hashicorp/terraform-action@v2
-        with:
-          command: plan
         env:
+          TF_WORKSPACE: "repo-test-az"
           TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }} # Terraform Cloud API token
