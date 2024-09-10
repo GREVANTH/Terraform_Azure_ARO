@@ -1,45 +1,47 @@
-# This is a basic workflow to help you get started with Actions
-
-name: 'Terraform Plan and Apply Workflow'
+name: Azure Terraform Deployment on Windows
 
 on:
   push:
     branches:
       - main
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
 
 jobs:
   terraform:
-    runs-on: ubuntu-latest
+    name: Terraform Plan and Apply on Windows
+    runs-on: windows-latest
 
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - name: 'Checkout code'
-        uses: actions/checkout@v4
-        
-      - name: 'Set up Terraform'
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.5.0
 
-      - name: 'Login to Azure'
-        uses: azure/login@v1
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+      - name: Set Azure credentials as environment variables
+        run: |
+          echo "Setting Azure environment variables"
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
-      - name: 'Terraform Init'
+      - name: Initialize Terraform
         run: terraform init
 
-      - name: 'Terraform Plan'
-        id: plan
-        run: terraform plan -out=tfplan
+      - name: Terraform Plan
+        run: terraform plan
         env:
-          TF_WORKSPACE: "repo-test-az"
-          TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }} # Terraform Cloud API token
+          TF_WORKSPACE: "my-azure-workspace"  # Replace with your Terraform Cloud workspace name
+          TF_TOKEN: ${{ secrets.TF_API_TOKEN }}  # Your Terraform Cloud API token
+
+      - name: Terraform Apply (Manual Approval Required)
+        run: terraform apply -auto-approve=false
+        env:
+          TF_WORKSPACE: "my-azure-workspace"
+          TF_TOKEN: ${{ secrets.TF_API_TOKEN }}
